@@ -37,9 +37,9 @@ spring:
       indent-output: true
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:mysql://localhost:3306/facerecognition?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true
-    username: root
-    password:
+    url: jdbc:mysql://${MYSQL_HOST:database-2.c5khresqi16u.us-east-1.rds.amazonaws.com}:3306/db_todolist_angular?characterEncoding=utf8
+    username: angular
+    password: ThePassword
     hikari:
       poolName: Hikari
       auto-commit: false

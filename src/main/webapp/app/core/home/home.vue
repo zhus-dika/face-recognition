@@ -1,11 +1,17 @@
 <template>
     <div class="home row">
-        <div class="col-md-3">
-            <span class="hipster img-fluid rounded"></span>
+        <div class="col-md-7">
+            <div class="booth">
+                <video id="video" width="380" height="300" autoplay></video>
+                <button @click="makePhoto" id="capture" class="booth-capture-button">Make a photo</button>
+                <canvas id="canvas" width="380" height="300"></canvas>
+                <img src="http://goo.gl/qgUfzX" id="photo" alt="Your photo">
+                <button @click="submitPhoto()" class="booth-capture-button">Send image</button>
+            </div>
         </div>
-        <div class="col-md-9">
-            <h1 class="display-4">Welcome, Java Hipster!</h1>
-            <p class="lead">This is your homepage</p>
+        <div class="col-md-5">
+            <h1 class="display-4">Welcome, Face Recognition System!</h1>
+            <p class="lead">You can make a photo and check your authorization</p>
 
             <div>
                 <div class="alert alert-success" v-if="authenticated">
@@ -21,25 +27,34 @@
                     <router-link class="alert-link" to="/register">Register a new account</router-link>
                 </div>
             </div>
-
-            <p>
-                If you have any question on JHipster:
-            </p>
-
-            <ul>
-                <li><a href="https://www.jhipster.tech/" target="_blank" rel="noopener">JHipster homepage</a></li>
-                <li><a href="http://stackoverflow.com/tags/jhipster/info" target="_blank" rel="noopener">JHipster on Stack Overflow</a></li>
-                <li><a href="https://github.com/jhipster/generator-jhipster/issues?state=open" target="_blank" rel="noopener">JHipster bug tracker</a></li>
-                <li><a href="https://gitter.im/jhipster/generator-jhipster" target="_blank" rel="noopener">JHipster public chat room</a></li>
-                <li><a href="https://twitter.com/jhipster" target="_blank" rel="noopener">follow @jhipster on Twitter</a></li>
-            </ul>
-
-            <p>
-                <span>If you like JHipster, don't forget to give us a star on</span> <a href="https://github.com/jhipster/generator-jhipster" target="_blank" rel="noopener">GitHub</a>!
-            </p>
         </div>
     </div>
 </template>
 
 <script lang="ts" src="./home.component.ts">
 </script>
+<style lang="scss">
+.booth {
+    width: 400px;
+    background: #ccc;
+    border: 10px solid #ddd;
+    margin: 0 auto;
+}
+
+.booth-capture-button {
+    display: block;
+    margin: 10px 0;
+    padding: 10px 20px;
+    background: cornflowerblue;
+    color: #fff;
+    text-align: center;
+    text-decoration: none;
+}
+
+#canvas {
+    display: none;
+}
+.btn-submit {
+    margin: auto;
+}
+</style>

@@ -2,19 +2,19 @@
     <b-navbar toggleable="md" type="dark" class="bg-primary">
         <b-navbar-brand class="logo" b-link to="/">
             <span class="logo-img"></span>
-            <span class="navbar-title">facerecognition</span> <span class="navbar-version">{{version}}</span>
-        </b-navbar-brand>      
-        <b-navbar-toggle 
-        right 
-        class="jh-navbar-toggler d-lg-none" 
-        href="javascript:void(0);"  
-        data-toggle="collapse" 
-        target="header-tabs" 
-        aria-expanded="false" 
+            <span class="navbar-title">facerecognition</span>
+        </b-navbar-brand>
+        <b-navbar-toggle
+        right
+        class="jh-navbar-toggler d-lg-none"
+        href="javascript:void(0);"
+        data-toggle="collapse"
+        target="header-tabs"
+        aria-expanded="false"
         aria-label="Toggle navigation">
             <font-awesome-icon icon="bars" />
         </b-navbar-toggle>
-           
+
         <b-collapse is-nav id="header-tabs">
             <b-navbar-nav class="ml-auto">
                 <b-nav-item to="/" exact>
