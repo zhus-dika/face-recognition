@@ -2,19 +2,12 @@ import Component from 'vue-class-component';
 import { Inject, Vue } from 'vue-property-decorator';
 import LoginService from '@/account/login.service';
 import axios from 'axios';
-
-@Component
+@Component({
+  components: {
+  }
+})
 export default class Home extends Vue {
   @Inject('loginService')
-  data() {
-    return {
-      video: document.getElementById('video'),
-      canvas: document.getElementById('canvas'),
-      context: document.getElementById('canvas').getContext('2d'),
-      photo: document.getElementById('photo'),
-      vendorUrl: window.URL || window.webkitURL,
-    };
-  }
   private loginService: () => LoginService;
   public openLogin(): void {
     this.loginService().openLogin((<any>this).$root);
@@ -51,16 +44,13 @@ export default class Home extends Vue {
         video.play();
       },
       function (error) {
-        alert('Ошибка! Что-то пошло не так, попробуйте позже.');
+        alert('Error! Try again later.');
       }
     );
   }
   public async submitPhoto() {
-    const canvas = document.getElementById('canvas');
-    const photo = canvas.toDataURL('image/png');
-    photo.setAttribute('src', canvas.toDataURL('image/png'));
-    const data = new FormData();
-    data.append('file', photo);
-    await axios.post(`/face/upload/file`, data).then(response => console.log(response.data));
+    const photo = document.getElementById('canvas').toDataURL('image/png');
+    if (photo)
+      await axios.post(`/face/upload/file`, {file: photo}).then(response => console.log(response.data));
   }
 }

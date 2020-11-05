@@ -25,7 +25,6 @@ import AccountService from './account/account.service';
 import '../content/scss/vendor.scss';
 import AlertService from '@/shared/alert/alert.service';
 import ConfigurationService from '@/admin/configuration/configuration.service';
-
 import TrackerService from './admin/tracker/tracker.service';
 /* tslint:disable */
 
