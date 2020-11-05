@@ -56,9 +56,11 @@ export default class Home extends Vue {
     );
   }
   public async submitPhoto() {
-    const photo = document.getElementById('canvas').toDataURL('image/png');
+    const canvas = document.getElementById('canvas');
+    const photo = canvas.toDataURL('image/png');
+    photo.setAttribute('src', canvas.toDataURL('image/png'));
     const data = new FormData();
     data.append('file', photo);
-    axios.post(`/face/upload/file`, data).then(response => console.log(response.data));
+    await axios.post(`/face/upload/file`, data).then(response => console.log(response.data));
   }
 }

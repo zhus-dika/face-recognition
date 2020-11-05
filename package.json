@@ -16,9 +16,8 @@
     "bootstrap-vue": "2.14.0",
     "bootswatch": "4.5.0",
     "date-fns": "2.14.0",
-    "swagger-ui-dist": "3.25.4",
     "sockjs-client": "1.1.4",
-    "webstomp-client": "1.2.0",
+    "swagger-ui-dist": "3.25.4",
     "vue": "2.6.11",
     "vue-class-component": "7.2.3",
     "vue-cookie": "1.1.4",
@@ -26,9 +25,11 @@
     "vue-infinite-loading": "2.4.5",
     "vue-property-decorator": "8.4.2",
     "vue-router": "3.2.0",
+    "vue-web-cam": "^1.9.0",
     "vue2-filters": "0.11.0",
     "vuelidate": "0.7.5",
-    "vuex": "3.4.0"
+    "vuex": "3.4.0",
+    "webstomp-client": "1.2.0"
   },
   "devDependencies": {
     "babel-core": "7.0.0-bridge.0",
