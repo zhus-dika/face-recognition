@@ -2,7 +2,7 @@
     <div class="home row">
         <div class="col-md-7">
             <div class="booth">
-                <video id="video" width="380" height="300" autoplay></video>
+                <video id="video" width="380" height="300" autoplay playsinline></video>
                 <button @click="makePhoto" id="capture" class="booth-capture-button">Make a photo</button>
                 <canvas id="canvas" width="380" height="300"></canvas>
                 <img src="http://goo.gl/qgUfzX" id="photo" alt="Your photo">

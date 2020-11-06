@@ -3,8 +3,7 @@ import { Inject, Vue } from 'vue-property-decorator';
 import LoginService from '@/account/login.service';
 import axios from 'axios';
 @Component({
-  components: {
-  }
+  components: {},
 })
 export default class Home extends Vue {
   @Inject('loginService')
@@ -29,28 +28,53 @@ export default class Home extends Vue {
     context.drawImage(video, 0, 0, 400, 300);
     const photo = document.getElementById('photo');
     const canvas = document.getElementById('canvas');
-    photo.setAttribute('src', canvas.toDataURL('image/png'));
+    photo.setAttribute('src', canvas.toDataURL('image/jpg'));
   }
-  public initMethod(): void {
-    navigator.getMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
-    navigator.getMedia(
-      {
-        video: true,
-        audio: false,
-      },
-      function (stream) {
-        const video = document.getElementById('video');
-        video.srcObject = stream;
-        video.play();
-      },
-      function (error) {
-        alert('Error! Try again later.');
-      }
-    );
+  public handleSuccess(stream) {
+    const constraints = { audio: false, video: { width: 380, height: 300 } };
+    const video = document.querySelector('video');
+    const videoTracks = stream.getVideoTracks();
+    console.log('Got stream with constraints:', constraints);
+    console.log(`Using video device: ${videoTracks[0].label}`);
+    window.stream = stream; // make variable available to browser console
+    video.srcObject = stream;
+  }
+
+  public handleError(error) {
+    if (error.name === 'ConstraintNotSatisfiedError') {
+      const constraints = { audio: false, video: { width: 380, height: 300 } };
+      const v = constraints.video;
+      alert(`The resolution ${v.width.exact}x${v.height.exact} px is not supported by your device.`);
+    } else if (error.name === 'PermissionDeniedError') {
+      alert(
+        'Permissions have not been granted to use your camera and ' +
+          'microphone, you need to allow the page access to your devices in ' +
+          'order for the demo to work.'
+      );
+    }
+    alert(`getUserMedia error: ${error.name}`, error);
+  }
+
+  public errorMsg(msg, error) {
+    const errorElement = document.querySelector('#errorMsg');
+    errorElement.innerHTML += `<p>${msg}</p>`;
+    if (typeof error !== 'undefined') {
+      console.error(error);
+    }
+  }
+
+  public async initMethod(e) {
+    try {
+      const constraints = { audio: false, video: { width: 380, height: 300 } };
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      this.handleSuccess(stream);
+      e.target.disabled = true;
+    } catch (e) {
+      this.handleError(e);
+    }
   }
   public async submitPhoto() {
-    const photo = document.getElementById('canvas').toDataURL('image/png');
-    if (photo)
-      await axios.post(`/face/upload/file`, {file: photo}).then(response => console.log(response.data));
+    const photo = document.getElementById('canvas').toDataURL('image/jpg');
+    if (photo) await axios.post(`/face/upload/file`, { file: photo }).then(response => console.log(response.data));
   }
 }
