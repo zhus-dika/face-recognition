@@ -4,6 +4,7 @@
             <div class="booth">
                 <video id="video" width="380" height="300" autoplay playsinline></video>
                 <button @click="makePhoto" id="capture" class="booth-capture-button">Make a photo</button>
+                <button @click="openVideo()" class="booth-capture-button">Open video</button>
                 <canvas id="canvas" width="380" height="300"></canvas>
                 <img src="http://goo.gl/qgUfzX" id="photo" alt="Your photo">
                 <button @click="submitPhoto()" class="booth-capture-button">Send image</button>

@@ -20,7 +20,7 @@ export default class Home extends Vue {
     return this.$store.getters.account ? this.$store.getters.account.login : '';
   }
   mounted() {
-    this.initMethod();
+    //this.initMethod();
   }
   public makePhoto() {
     const context = document.getElementById('canvas').getContext('2d');
@@ -31,7 +31,7 @@ export default class Home extends Vue {
     photo.setAttribute('src', canvas.toDataURL('image/jpg'));
   }
   public handleSuccess(stream) {
-    const constraints = { audio: false, video: { width: 380, height: 300 } };
+    const constraints = { audio: false, video: { width: 1280, height: 720 } };
     const video = document.querySelector('video');
     const videoTracks = stream.getVideoTracks();
     console.log('Got stream with constraints:', constraints);
@@ -52,6 +52,7 @@ export default class Home extends Vue {
           'order for the demo to work.'
       );
     }
+    console.log(error);
     alert(`getUserMedia error: ${error.name}`, error);
   }
 
@@ -63,7 +64,7 @@ export default class Home extends Vue {
     }
   }
 
-  public async initMethod(e) {
+  public async openVideo(e) {
     try {
       const constraints = { audio: false, video: { width: 380, height: 300 } };
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
