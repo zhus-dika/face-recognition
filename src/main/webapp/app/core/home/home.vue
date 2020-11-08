@@ -32,6 +32,7 @@
                         <button type="button" class="btn btn-primary" @click="onCapture">Capture Photo</button>
                         <button type="button" class="btn btn-danger" @click="onStop">Stop Camera</button>
                         <button type="button" class="btn btn-success" @click="onStart">Start Camera</button>
+                        <button type="button" class="btn btn-primary" @click="submitPhoto">Send Photo</button>
                     </div>
                 </div>
             </div>
@@ -47,6 +48,7 @@
 
 <script>
 import { WebCam } from "vue-web-cam";
+import axios from 'axios';
 export default {
     name: "App",
     components: {
@@ -105,6 +107,9 @@ export default {
             this.deviceId = deviceId;
             this.camera = deviceId;
             console.log("On Camera Change Event", deviceId);
+        },
+        async submitPhoto() {
+            await axios.post(`http://localhost:8080/face/upload/file`,{ file: this.img }).then(response => console.log(response.data));
         }
     }
 };

@@ -12,7 +12,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.annotation.PostConstruct;
 import java.net.InetAddress;
@@ -63,6 +66,16 @@ public class FacerecognitionApp {
         Environment env = app.run(args).getEnvironment();
         logApplicationStartup(env);
     }
+    /*@Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/face/upload/file").allowedHeaders("*").allowedOrigins("http://localhost:9000").allowedMethods("*");
+
+            }
+        };
+    }*/
 
     private static void logApplicationStartup(Environment env) {
         String protocol = "http";

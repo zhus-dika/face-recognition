@@ -18,6 +18,7 @@ import java.lang.InterruptedException;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 @RestController
+@CrossOrigin(origins="http://localhost:9000")
 @RequestMapping("/face")
 public class FaceRecognitionResource {
     @PostMapping("/upload/file")
@@ -29,7 +30,7 @@ public class FaceRecognitionResource {
                 byte[] decodedImg = Base64.getMimeDecoder().decode(encodedImg.getBytes(StandardCharsets.UTF_8));
                 FileUtils.writeByteArrayToFile(new File("uploads/user_photo.jpg"), decodedImg);
             }
-            ProcessBuilder processBuilder = new ProcessBuilder("face_recognition", "/home/dinara/Documents/face_recognition/known_people/", "/home/dinara/face-recognition-webapp/uploads/user_photo.jpg");
+            ProcessBuilder processBuilder = new ProcessBuilder("face_recognition", "/home/dinara/Documents/face-recognition-test/known_people/", "/home/dinara/Documents/face-recognition/uploads/user_photo.jpg");
             processBuilder.redirectErrorStream(true);
             File log = new File("output.log");
             processBuilder.redirectOutput(log);
@@ -40,7 +41,7 @@ public class FaceRecognitionResource {
             Process process = processBuilder.inheritIO().start();
             process.waitFor();
             String output = new String(baos.toByteArray());
-            original.println("output = " + output);
+            //original.println("output = " + output);
             return new ResponseEntity<>(output, HttpStatus.OK);
         }
         return new ResponseEntity<>("error", HttpStatus.NO_CONTENT);
