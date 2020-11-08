@@ -1,61 +1,111 @@
 <template>
-    <div class="home row">
-        <div class="col-md-7">
-            <div class="booth">
-                <video id="video" width="380" height="300" autoplay playsinline></video>
-                <button @click="makePhoto" id="capture" class="booth-capture-button">Make a photo</button>
-                <button @click="openVideo()" class="booth-capture-button">Open video</button>
-                <canvas id="canvas" width="380" height="300"></canvas>
-                <img src="http://goo.gl/qgUfzX" id="photo" alt="Your photo">
-                <button @click="submitPhoto()" class="booth-capture-button">Send image</button>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <h2>Current Camera</h2>
+                <code v-if="device">{{ device.label }}</code>
+                <div class="border">
+                    <vue-web-cam
+                        ref="webcam"
+                        :device-id="deviceId"
+                        width="100%"
+                        @started="onStarted"
+                        @stopped="onStopped"
+                        @error="onError"
+                        @cameras="onCameras"
+                        @camera-change="onCameraChange"
+                    />
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <select v-model="camera">
+                            <option>-- Select Device --</option>
+                            <option
+                                v-for="device in devices"
+                                :key="device.deviceId"
+                                :value="device.deviceId"
+                            >{{ device.label }}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-12">
+                        <button type="button" class="btn btn-primary" @click="onCapture">Capture Photo</button>
+                        <button type="button" class="btn btn-danger" @click="onStop">Stop Camera</button>
+                        <button type="button" class="btn btn-success" @click="onStart">Start Camera</button>
+                    </div>
+                </div>
             </div>
-        </div>
-        <div class="col-md-5">
-            <h1 class="display-4">Welcome, Face Recognition System!</h1>
-            <p class="lead">You can make a photo and check your authorization</p>
-
-            <div>
-                <div class="alert alert-success" v-if="authenticated">
-                    <span v-if="username">You are logged in as user "{{username}}"</span>
-                </div>
-
-                <div class="alert alert-warning" v-if="!authenticated">
-                    <span>If you want to </span>
-                    <a class="alert-link" v-on:click="openLogin()">sign in</a><span >, you can try the default accounts:<br/>- Administrator (login="admin" and password="admin") <br/>- User (login="user" and password="user").</span>
-                </div>
-                <div class="alert alert-warning" v-if="!authenticated">
-                    <span>You don't have an account yet?</span>&nbsp;
-                    <router-link class="alert-link" to="/register">Register a new account</router-link>
-                </div>
+            <div class="col-md-6">
+                <h2>Captured Image</h2>
+                <figure class="figure">
+                    <img :src="img" class="img-responsive" />
+                </figure>
             </div>
         </div>
     </div>
 </template>
 
-<script lang="ts" src="./home.component.ts">
+<script>
+import { WebCam } from "vue-web-cam";
+export default {
+    name: "App",
+    components: {
+        "vue-web-cam": WebCam
+    },
+    data() {
+        return {
+            img: null,
+            camera: null,
+            deviceId: null,
+            devices: []
+        };
+    },
+    computed: {
+        device: function() {
+            return this.devices.find(n => n.deviceId === this.deviceId);
+        }
+    },
+    watch: {
+        camera: function(id) {
+            this.deviceId = id;
+        },
+        devices: function() {
+            // Once we have a list select the first one
+            const [first, ...tail] = this.devices;
+            if (first) {
+                this.camera = first.deviceId;
+                this.deviceId = first.deviceId;
+            }
+        }
+    },
+    methods: {
+        onCapture() {
+            this.img = this.$refs.webcam.capture();
+        },
+        onStarted(stream) {
+            console.log("On Started Event", stream);
+        },
+        onStopped(stream) {
+            console.log("On Stopped Event", stream);
+        },
+        onStop() {
+            this.$refs.webcam.stop();
+        },
+        onStart() {
+            this.$refs.webcam.start();
+        },
+        onError(error) {
+            console.log("On Error Event", error);
+        },
+        onCameras(cameras) {
+            this.devices = cameras;
+            console.log("On Cameras Event", cameras);
+        },
+        onCameraChange(deviceId) {
+            this.deviceId = deviceId;
+            this.camera = deviceId;
+            console.log("On Camera Change Event", deviceId);
+        }
+    }
+};
 </script>
-<style lang="scss">
-.booth {
-    width: 400px;
-    background: #ccc;
-    border: 10px solid #ddd;
-    margin: 0 auto;
-}
-
-.booth-capture-button {
-    display: block;
-    margin: 10px 0;
-    padding: 10px 20px;
-    background: cornflowerblue;
-    color: #fff;
-    text-align: center;
-    text-decoration: none;
-}
-
-#canvas {
-    display: none;
-}
-.btn-submit {
-    margin: auto;
-}
-</style>

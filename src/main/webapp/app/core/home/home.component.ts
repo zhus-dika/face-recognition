@@ -2,16 +2,34 @@ import Component from 'vue-class-component';
 import { Inject, Vue } from 'vue-property-decorator';
 import LoginService from '@/account/login.service';
 import axios from 'axios';
+import { WebCam } from "vue-web-cam";
+
+
 @Component({
-  components: {},
+  components: {
+    "vue-web-cam": WebCam
+  },
 })
 export default class Home extends Vue {
   @Inject('loginService')
   private loginService: () => LoginService;
+  private img = null;
+  private camera: any = null;
+  private deviceId: number = null;
+  private devices: Array<object> = [];
+  /*@Watch('camera') cameraChanged(id: number) {
+    this.deviceId = id;
+  }*/
   public openLogin(): void {
     this.loginService().openLogin((<any>this).$root);
   }
-
+mounted() {
+this.camera = this.devices[0];
+this.deviceId = this.camera.deviceId;
+}
+ get device() {
+      return this.devices.find(n => n.deviceId === this.deviceId);
+  }
   public get authenticated(): boolean {
     return this.$store.getters.authenticated;
   }
@@ -19,63 +37,32 @@ export default class Home extends Vue {
   public get username(): string {
     return this.$store.getters.account ? this.$store.getters.account.login : '';
   }
-  mounted() {
-    //this.initMethod();
+  public onStarted(stream) {
+        console.log("On Started Event", stream);
   }
-  public makePhoto() {
-    const context = document.getElementById('canvas').getContext('2d');
-    const video = document.getElementById('video');
-    context.drawImage(video, 0, 0, 400, 300);
-    const photo = document.getElementById('photo');
-    const canvas = document.getElementById('canvas');
-    photo.setAttribute('src', canvas.toDataURL('image/jpg'));
+  public onStart() {
+            this.$refs.webcam.start();
   }
-  public handleSuccess(stream) {
-    const constraints = { audio: false, video: { width: 1280, height: 720 } };
-    const video = document.querySelector('video');
-    const videoTracks = stream.getVideoTracks();
-    console.log('Got stream with constraints:', constraints);
-    console.log(`Using video device: ${videoTracks[0].label}`);
-    window.stream = stream; // make variable available to browser console
-    video.srcObject = stream;
-  }
+public onCapture() {
+            this.img = this.$refs.webcam.capture();
+        }
 
-  public handleError(error) {
-    if (error.name === 'ConstraintNotSatisfiedError') {
-      const constraints = { audio: false, video: { width: 380, height: 300 } };
-      const v = constraints.video;
-      alert(`The resolution ${v.width.exact}x${v.height.exact} px is not supported by your device.`);
-    } else if (error.name === 'PermissionDeniedError') {
-      alert(
-        'Permissions have not been granted to use your camera and ' +
-          'microphone, you need to allow the page access to your devices in ' +
-          'order for the demo to work.'
-      );
-    }
-    console.log(error);
-    alert(`getUserMedia error: ${error.name}`, error);
-  }
-
-  public errorMsg(msg, error) {
-    const errorElement = document.querySelector('#errorMsg');
-    errorElement.innerHTML += `<p>${msg}</p>`;
-    if (typeof error !== 'undefined') {
-      console.error(error);
-    }
-  }
-
-  public async openVideo(e) {
-    try {
-      const constraints = { audio: false, video: { width: 380, height: 300 } };
-      const stream = await navigator.mediaDevices.getUserMedia(constraints);
-      this.handleSuccess(stream);
-      e.target.disabled = true;
-    } catch (e) {
-      this.handleError(e);
-    }
-  }
-  public async submitPhoto() {
-    const photo = document.getElementById('canvas').toDataURL('image/jpg');
-    if (photo) await axios.post(`/face/upload/file`, { file: photo }).then(response => console.log(response.data));
-  }
+        public onStopped(stream) {
+            console.log("On Stopped Event", stream);
+        }
+        public onStop() {
+            this.$refs.webcam.stop();
+        }
+        public onError(error) {
+            console.log("On Error Event", error);
+        }
+        public onCameras(cameras) {
+            this.devices = cameras;
+            console.log("On Cameras Event", cameras);
+        }
+        public onCameraChange(deviceId) {
+            this.deviceId = deviceId;
+            this.camera = deviceId;
+            console.log("On Camera Change Event", deviceId);
+        }
 }
