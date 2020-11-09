@@ -5,7 +5,7 @@
                 <h2>Current Camera</h2>
                 <code v-if="device">{{ device.label }}</code>
                 <div class="border">
-                    <!--<vue-web-cam
+                    <vue-web-cam
                         ref="webcam"
                         :device-id="deviceId"
                         width="100%"
@@ -14,7 +14,7 @@
                         @error="onError"
                         @cameras="onCameras"
                         @camera-change="onCameraChange"
-                    />-->
+                    />
                 </div>
 
                 <div class="row">
@@ -45,6 +45,89 @@
                     <video onloadedmetadata="onPlay(this)" id="inputVideo" autoplay muted playsinline></video>
                     <canvas id="overlay" />
                 </div>
+                <div class="row side-by-side">
+
+                    <!-- face_detector_selection_control -->
+                    <div id="face_detector_selection_control" class="row input-field" style="margin-right: 20px;">
+                        <select id="selectFaceDetector">
+                            <option value="ssd_mobilenetv1">SSD Mobilenet V1</option>
+                            <option value="tiny_face_detector">Tiny Face Detector</option>
+                        </select>
+                        <label>Select Face Detector</label>
+                    </div>
+                    <!-- face_detector_selection_control -->
+
+                    <!-- fps_meter -->
+                    <div id="fps_meter" class="row side-by-side">
+                        <div>
+                            <label for="time">Time:</label>
+                            <input disabled value="-" id="time" type="text" class="bold">
+                            <label for="fps">Estimated Fps:</label>
+                            <input disabled value="-" id="fps" type="text" class="bold">
+                        </div>
+                    </div>
+                    <!-- fps_meter -->
+
+                </div>
+
+
+                <!-- ssd_mobilenetv1_controls -->
+                <span id="ssd_mobilenetv1_controls">
+      <div class="row side-by-side">
+        <div class="row">
+          <label for="minConfidence">Min Confidence:</label>
+          <input disabled value="0.5" id="minConfidence" type="text" class="bold">
+        </div>
+        <button
+            class="waves-effect waves-light btn"
+            onclick="onDecreaseMinConfidence()"
+        >
+          <i class="material-icons left">-</i>
+        </button>
+        <button
+            class="waves-effect waves-light btn"
+            onclick="onIncreaseMinConfidence()"
+        >
+          <i class="material-icons left">+</i>
+        </button>
+      </div>
+    </span>
+                <!-- ssd_mobilenetv1_controls -->
+
+                <!-- tiny_face_detector_controls -->
+                <span id="tiny_face_detector_controls">
+      <div class="row side-by-side">
+        <div class="row input-field" style="margin-right: 20px;">
+          <select id="inputSize">
+            <option value="" disabled selected>Input Size:</option>
+            <option value="128">128 x 128</option>
+            <option value="160">160 x 160</option>
+            <option value="224">224 x 224</option>
+            <option value="320">320 x 320</option>
+            <option value="416">416 x 416</option>
+            <option value="512">512 x 512</option>
+            <option value="608">608 x 608</option>
+          </select>
+          <label>Input Size</label>
+        </div>
+        <div class="row">
+          <label for="scoreThreshold">Score Threshold:</label>
+          <input disabled value="0.5" id="scoreThreshold" type="text" class="bold">
+        </div>
+        <button
+            class="waves-effect waves-light btn"
+            onclick="onDecreaseScoreThreshold()"
+        >
+          <i class="material-icons left">-</i>
+        </button>
+        <button
+            class="waves-effect waves-light btn"
+            onclick="onIncreaseScoreThreshold()"
+        >
+          <i class="material-icons left">+</i>
+        </button>
+      </div>
+    </span>
             </div>
         </div>
     </div>
@@ -54,6 +137,7 @@
 import { WebCam } from "vue-web-cam";
 import axios from 'axios';
 import * as faceapi from 'face-api.js';
+import * as external from '@/shared/external_js/faceDetectionControls';
 export default {
     name: "App",
     components: {
@@ -74,7 +158,7 @@ export default {
         }
     },
     mounted() {
-        this.onPlay(this)
+        this.onPlay()
     },
     watch: {
         camera: function(id) {
@@ -104,6 +188,7 @@ export default {
         },
         onStart() {
             this.$refs.webcam.start();
+            this.onPlay(this)
         },
         onError(error) {
             console.log("On Error Event", error);
@@ -123,11 +208,11 @@ export default {
         async onPlay() {
             const videoEl = document.getElementById('inputVideo');
 
-            if(videoEl.paused || videoEl.ended || !isFaceDetectionModelLoaded())
+            if(videoEl.paused || videoEl.ended || !external.isFaceDetectionModelLoaded())
                 return setTimeout(() => this.onPlay())
 
 
-            const options = getFaceDetectorOptions()
+            const options = external.getFaceDetectorOptions()
 
             const ts = Date.now()
 
@@ -145,8 +230,8 @@ export default {
         },
         async run() {
             // load face detection model
-            await changeFaceDetector(TINY_FACE_DETECTOR)
-            changeInputSize(128)
+            await external.changeFaceDetector(TINY_FACE_DETECTOR)
+            external.changeInputSize(128)
 
             // try to access users webcam and stream the images
             // to the video element
@@ -157,8 +242,8 @@ export default {
         updateTimeStats(timeInMs) {
             this.forwardTimes = [timeInMs].concat(this.forwardTimes).slice(0, 30)
             const avgTimeInMs = this.forwardTimes.reduce((total, t) => total + t) / this.forwardTimes.length
-            $('#time').val(`${Math.round(avgTimeInMs)} ms`)
-            $('#fps').val(`${faceapi.utils.round(1000 / avgTimeInMs)}`)
+            document.getElementById('time').val(`${Math.round(avgTimeInMs)} ms`)
+            document.getElementById('fps').val(`${faceapi.utils.round(1000 / avgTimeInMs)}`)
         },
         updateResults() {}
     }
