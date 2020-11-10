@@ -54,6 +54,16 @@ function onDecreaseScoreThreshold() {
   updateResults()
 }
 
+function onIncreaseMinFaceSize() {
+  minFaceSize = Math.min(faceapi.utils.round(minFaceSize + 20), 300)
+  $('#minFaceSize').val(minFaceSize)
+}
+
+function onDecreaseMinFaceSize() {
+  minFaceSize = Math.max(faceapi.utils.round(minFaceSize - 20), 50)
+  $('#minFaceSize').val(minFaceSize)
+}
+
 function getCurrentFaceDetectionNet() {
   if (selectedFaceDetector === SSD_MOBILENETV1) {
     return faceapi.nets.ssdMobilenetv1
@@ -102,18 +112,4 @@ function initFaceDetectionControls() {
   inputSizeSelect.val(inputSize)
   inputSizeSelect.on('change', onInputSizeChanged)
   inputSizeSelect.material_select()
-}
-export {
-  initFaceDetectionControls,
-  onSelectedFaceDetectorChanged,
-  changeFaceDetector,
-  getCurrentFaceDetectionNet,
-  onIncreaseScoreThreshold,
-  onDecreaseScoreThreshold,
-  onInputSizeChanged,
-  onDecreaseMinConfidence,
-  onIncreaseMinConfidence,
-  isFaceDetectionModelLoaded,
-  changeInputSize,
-  getFaceDetectorOptions
 }

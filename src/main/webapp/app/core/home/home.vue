@@ -5,7 +5,7 @@
                 <h2>Current Camera</h2>
                 <code v-if="device">{{ device.label }}</code>
                 <div class="border">
-                    <vue-web-cam
+                    <!--<vue-web-cam
                         ref="webcam"
                         :device-id="deviceId"
                         width="100%"
@@ -14,7 +14,11 @@
                         @error="onError"
                         @cameras="onCameras"
                         @camera-change="onCameraChange"
-                    />
+                    />-->
+                    <div style="position: relative" class="margin">
+                        <video onloadedmetadata="onPlay(this)" id="inputVideo" autoplay muted playsinline></video>
+                        <canvas id="overlay" />
+                    </div>
                 </div>
 
                 <div class="row">
@@ -41,10 +45,6 @@
                 <figure class="figure">
                     <img :src="img" class="img-responsive" />
                 </figure>
-                <div style="position: relative" class="margin">
-                    <video onloadedmetadata="onPlay(this)" id="inputVideo" autoplay muted playsinline></video>
-                    <canvas id="overlay" />
-                </div>
                 <div class="row side-by-side">
 
                     <!-- face_detector_selection_control -->
@@ -136,7 +136,7 @@
 <script>
 import { WebCam } from "vue-web-cam";
 import axios from 'axios';
-import * as faceapi from 'face-api.js';
+import * as faceApi from 'face-api.js';
 import * as external from '@/shared/external_js/faceDetectionControls';
 export default {
     name: "App",
@@ -207,18 +207,14 @@ export default {
         },
         async onPlay() {
             const videoEl = document.getElementById('inputVideo');
-
             if(videoEl.paused || videoEl.ended || !external.isFaceDetectionModelLoaded())
                 return setTimeout(() => this.onPlay())
-
-
             const options = external.getFaceDetectorOptions()
-
             const ts = Date.now()
 
-            const result = await faceapi.detectSingleFace(videoEl, options)
-
-            updateTimeStats(Date.now() - ts)
+            const result = await faceApi.detectSingleFace(videoEl, options)
+            console.log(result);
+            this.updateTimeStats(Date.now() - ts)
 
             if (result) {
                 const canvas = document.getElementById('#overlay');
@@ -236,7 +232,7 @@ export default {
             // try to access users webcam and stream the images
             // to the video element
             const stream = await navigator.mediaDevices.getUserMedia({ video: {} })
-            const videoEl = $('#inputVideo').get(0)
+            const videoEl = document.getElementById('#inputVideo')
             videoEl.srcObject = stream
         },
         updateTimeStats(timeInMs) {
